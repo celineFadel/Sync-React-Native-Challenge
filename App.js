@@ -1,5 +1,5 @@
-import { StatusBar } from 'expo-status-bar';
 import React from 'react';
+import { ImageBackground } from 'react-native';
 import AppNavigator from './src/navigation/app_nav';
 
 class App extends React.Component { 

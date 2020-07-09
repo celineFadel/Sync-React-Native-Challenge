@@ -1,7 +1,10 @@
 import React from 'react';
-import { ActivityIndicator, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, ImageBackground, ScrollView, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
 
 import ListItem from '../library/list_item';
+import HomeNavElement from '../library/home_nav_element';
+import BottomNav from '../library/bottom_tab_nav';
+import TopNav from '../library/nav_bar';
 
 export default class Home extends React.Component {
   state = {
@@ -9,7 +12,9 @@ export default class Home extends React.Component {
     categories: [],
     items2d: [],
     drawed: [],
-    isLoading: true
+    isLoading: true,
+    activeId: 1,
+    drawnCategories: []
   };
 
   componentDidMount = async () => {
@@ -23,9 +28,25 @@ export default class Home extends React.Component {
       this.setState({categories: arr});
       this.setState({items: obj.data});
       this.prepare();
+      this.drawCategories();  
     })
     .catch((err) => {console.log(err); })
     .finally(() => this.setState({isLoading: false}));
+  }
+
+  drawCategories = () => {
+    let cat = this.state.categories;
+    let drawnCategories=[];
+
+    for(let i=0; i<cat.length; i++) {
+      drawnCategories.push(<HomeNavElement key={i} activeId={this.state.activeId} id={i+1} onPress={() => {this.setActive}} title={cat[i]} />);
+    }
+
+    this.setState({drawnCategories});
+  }
+
+  componentWillUnmount() {
+    this._isMounted = false;
   }
 
   prepare = async () => {
@@ -40,7 +61,6 @@ export default class Home extends React.Component {
     let drawed = [];
 
     for(let j=0; j<cats.length; j++) {
-      drawed.push(<Text key={j} style={styles.title}>{cats[j]}</Text>)
       let temp = this.getListElements(gfg[j], j);
       drawed.push(temp);
     }    
@@ -54,34 +74,47 @@ export default class Home extends React.Component {
         let {latitude, longitude, title, visits, image, id} = e;
 
         visits == null ? visits=0 : visits=visits;
+        
+        if(visits>=1000) {
+          visits = visits/1000+"k";
+        }
   
         let url = {uri: image};
   
-        return <ListItem key={url + id + i} id={id} title={title} visits={visits} longitude={longitude} latitude={latitude} url={url} onPress={this.navigateToDetails} />;
+        return <ListItem key={url + id + i} id={id} title={title} visits={visits} url={url} onPress={this.navigateToDetails} />;
       });
 
     return list;
   };
 
-  componentWillUnmount() {
-    this._isMounted = false;
-  }
-
   navigateToDetails = (id) => {
-    this.props.navigation.navigate('Details', { id: id, });
+    this.props.navigation.navigate('Details', { id: id });
   }   
+
+  setActive = (id) => {    
+    this.setState({activeId: id});
+  }
 
   render() {
     return (
       <View style={styles.mainContainer}>
-        {this.state.isLoading 
-      ? <ActivityIndicator style={styles.loader} /> 
-      : 
-        <ScrollView>
-          {this.state.drawed}
-        </ScrollView>
-  }
-      </View>
+          {this.state.isLoading 
+            ? <ActivityIndicator style={styles.loader} /> 
+            : 
+            <View style={{height:'100%', width:'100%', flex:1, flexDirection:'column', paddingVertical: '5%'}}> 
+              <TopNav  navigation={this.props.navigation} />
+              <View style={styles.nav}>
+                <ScrollView horizontal={true}>
+                  {this.state.drawnCategories}
+                </ScrollView>
+              </View>
+              <ScrollView style={styles.scroller}>
+                {this.state.drawed}
+              </ScrollView>
+              <BottomNav />
+            </View>
+          }
+        </View>
     );
   }
 }
@@ -95,5 +128,23 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     fontSize: 20,
     padding: '2%'
-  }
+  },
+  loader: {
+    height: '25%',
+    margin: '40%'
+  },
+  nav: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    height: '5%',
+    backgroundColor: 'white',
+    paddingHorizontal: '5%',
+    width: '100%',
+    marginTop: '10%'
+  },
+  scroller: {
+    height: '70%',
+    marginBottom: '10%'
+  },
 });
