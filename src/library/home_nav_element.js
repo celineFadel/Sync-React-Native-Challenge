@@ -24,7 +24,7 @@ export default class HomeNavElement extends React.Component {
 
     render() {
         return (
-            <TouchableOpacity style={styles.container} onPress={() => {this.setActive}}>
+            <TouchableOpacity style={styles.container} onPress={() => {this.setActive()}}>
                 <Text style={ this.state.active ? styles.textActive : styles.text}>
                     {this.props.title}
                 </Text>
@@ -37,8 +37,8 @@ export default class HomeNavElement extends React.Component {
 
 const styles = StyleSheet.create({
     container: {
-        paddingRight: '4%',
-        width: 100
+        paddingRight: '5%',
+        width: 'auto'
     },
     lineActive: {
         borderBottomColor: 'red',
@@ -47,7 +47,8 @@ const styles = StyleSheet.create({
     },
     textActive: {
         color: '#066ab4',
-        fontSize: 18
+        fontSize: 15,
+        textTransform: 'uppercase',
     },
     line: {
         borderBottomColor: '#cccccc',
@@ -56,6 +57,7 @@ const styles = StyleSheet.create({
     },
     text: {
         color: '#cccccc',
-        fontSize: 18
+        fontSize: 15,
+        textTransform: 'uppercase',
     }
 });
