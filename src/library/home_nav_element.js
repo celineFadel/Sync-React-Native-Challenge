@@ -38,7 +38,8 @@ export default class HomeNavElement extends React.Component {
 const styles = StyleSheet.create({
     container: {
         paddingRight: '5%',
-        width: 'auto'
+        width: 'auto',
+        minWidth: 50
     },
     lineActive: {
         borderBottomColor: 'red',
